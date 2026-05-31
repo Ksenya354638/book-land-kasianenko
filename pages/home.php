@@ -22,6 +22,31 @@ if (isset($_GET['logOut'])) {
     session_destroy(); 
     header("Location: ../index.php");
 }
+$(document).ready(function () {
+
+    function loadStatistics(file) {
+        $("#libraryStatistics").load(file);
+    }
+
+    // За замовчуванням
+    loadStatistics("../snippets/books_statistics.php");
+
+    $("#booksStatistics").click(function (e) {
+        e.preventDefault();
+        loadStatistics("../snippets/books_statistics.php");
+    });
+
+    $("#customersStatistics").click(function (e) {
+        e.preventDefault();
+        loadStatistics("../snippets/customers_statistics.php");
+    });
+
+    $("#employeesStatistics").click(function (e) {
+        e.preventDefault();
+        loadStatistics("../snippets/employee_statistics.php");
+    });
+
+});
 
 if (isset($_SESSION['EmployeeID'])) {
 ?>
@@ -83,15 +108,25 @@ if (isset($_SESSION['EmployeeID'])) {
         </div>
 
         <div class="functions col-lg-12">
-            <h1>Остання статистика</h1>
-            <div class="col-lg-12 menu">
-                <a href="#" id="booksStatistics" class="col-lg-4">Статистика за книгами</a>
-                <a href="#" id="customersStatistics" class="col-lg-4">Статистика за клієнтами</a>
-                <a href="#" id="employeesStatistics" class="col-lg-4">Статистика за працівниками</a>
-            </div>
-            <div name="employeesStatistics" id="employeesStatistics" class="col-lg-12">
-                </div>
-        </div>
+    <h1>Остання статистика</h1>
+
+    <div class="col-lg-12 menu">
+        <a href="#" id="booksStatistics" class="col-lg-4">
+            Статистика за книгами
+        </a>
+
+        <a href="#" id="customersStatistics" class="col-lg-4">
+            Статистика за клієнтами
+        </a>
+
+        <a href="#" id="employeesStatistics" class="col-lg-4">
+            Статистика за працівниками
+        </a>
+    </div>
+
+    <div class="col-lg-12" id="libraryStatistics">
+    </div>
+</div>
     </div>
     <footer class="footer col-lg-12">
         <div class="col-lg-9 footer-left">

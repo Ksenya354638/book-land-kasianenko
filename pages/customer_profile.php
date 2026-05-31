@@ -10,6 +10,12 @@ try {
 } catch (PDOException $e) { die("Помилка БД"); }
 
 if(isset($_SESSION['EmployeeID'])) {
+
+if(isset($_GET['logOut'])) {
+    session_destroy();
+    header("Location: ../index.php");
+    exit;
+}
     if(isset($_GET['CustomerID'])) {
         $customerID = $_GET['CustomerID'];
 
@@ -122,43 +128,39 @@ $stmtSales->fetchAll(PDO::FETCH_ASSOC);
             <hr>
 
             <h3>Історія покупок:</h3>
-            <table class="table result-table col-lg-12" style="margin-top:15px;">
-                <tr>
-                    <th>ID продажу</th>
-                    <th>Книга</th>
-                    <th>Продавець</th>
-                    <th>Дата продажу</th>
-                    <th>Кількість</th>
-                </tr>
-                <?php foreach($salesHistory as $row): ?>
-                    <tr>
-                        <td><?php echo $row['SaleID']; ?></td>
-                        <td><?php echo $row['Title']; ?></td>
-                        <td><?php echo $row['FirstName'].' '.$row['Surname']; ?></td>
-                        <td><?php echo $row['SaleDate']; ?></td>
-                        <td><?php echo $row['Quantity']; ?></td>
-                    </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </table>
+<table class="table result-table col-lg-12" style="margin-top:15px;">
+    <tr>
+        <th>ID продажу</th>
+        <th>Книга</th>
+        <th>Продавець</th>
+        <th>Дата продажу</th>
+        <th>Кількість</th>
+    </tr>
 
-            <h3 class="mt-5">Історія повернутих книг:</h3>
-            <table class="table result-table col-lg-12" style="margin-top:15px;">
-                <tr>
-                    <th>ID</th><th>Книга</th><th>Видано</th><th>Повернено</th>
-                </tr>
-                <?php if (empty($historyBooks)): ?>
-                    <tr><td colspan="4" class="text-center">Історія порожня</td></tr>
-                <?php else: ?>
-                    <?php foreach ($historyBooks as $row): ?>
-                    <tr>
-                        <td><?php echo $row['ProvisionID']; ?></td>
-                        <td><?php echo htmlspecialchars($row['Title']); ?></td>
-                        <td><?php echo $row['SaleDate']; ?></td>
-                    </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </table>
+    <?php if(empty($salesHistory)): ?>
+        <tr>
+            <td colspan="5" class="text-center">
+                Покупок не знайдено
+            </td>
+        </tr>
+    <?php else: ?>
+        <?php foreach($salesHistory as $row): ?>
+            <tr>
+                <td><?php echo $row['SaleID']; ?></td>
+                <td>
+                    <a href="./book_profile.php?BookID=<?php echo $row['BookID']; ?>">
+                        <?php echo htmlspecialchars($row['Title']); ?>
+                    </a>
+                </td>
+                <td>
+                    <?php echo htmlspecialchars($row['FirstName'].' '.$row['Surname']); ?>
+                </td>
+                <td><?php echo $row['SaleDate']; ?></td>
+                <td><?php echo $row['Quantity']; ?></td>
+            </tr>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</table>
 
         <?php else: ?>
             <div class="alert alert-danger">Клієнта не знайдено!</div>

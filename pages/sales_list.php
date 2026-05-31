@@ -27,8 +27,10 @@ if(isset($_SESSION['EmployeeID'])) {
             SUM(Quantity) AS total_books
             FROM sales
     ")->fetch(PDO::FETCH_ASSOC);
+    $total_sales = $stats['total_sales'] ?? 0;
+    $total_books = $stats['total_books'] ?? 0;
 
-    $count_all = $stats['total'] ?? 0;
+    $count_all = $stats['total_sales'] ?? 0;
 
     // 2. Основний запит
     $query = "SELECT s.SaleID, s.BookID, s.CustomerID, b.Title, a.Name AS aName, a.Surname AS aSurname,
@@ -40,7 +42,7 @@ if(isset($_SESSION['EmployeeID'])) {
 
 }
     
-    $sales = $conn->query($full_query)->fetchAll(PDO::FETCH_ASSOC);
+    $sales = $conn->query($query)->fetchAll(PDO::FETCH_ASSOC);
 
     if (isset($_GET['logOut'])){
         session_destroy();
@@ -113,21 +115,41 @@ if(isset($_SESSION['EmployeeID'])) {
                             <tr>
                                 <th>Книга</th>
                                 <th>Автор</th>
+                                <th>Покупець</th>
                                 <th>Дата продажу</th>
-                                <th>Видано</th>
+                                <th>Кількість</th>
                                 <th style="min-width: 150px;">Кількість</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="<?php echo $is_returned ? '' : 'not-returned'; ?>">
-                                <td><a href="book_profile.php?BookID=<?php echo $row['BookID']; ?>"><?php echo htmlspecialchars($row['Title']); ?></a></td>
-                                <td><?php echo htmlspecialchars($row['aName'] . " " . $row['aSurname']); ?></td>
-                                <td><a href="customer_profile.php?CustomerID=<?php echo $row['CustomerID']; ?>"><?php echo htmlspecialchars($row['FirstName'] . " " . $row['cSurname']); ?></a></td>
-                                <td><?php echo $row['SaleDate']; ?></td>
-                                <td><?php echo $row['Quantity']; ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
+<?php foreach ($sales as $row): ?>
+    <tr>
+        <td>
+            <a href="book_profile.php?BookID=<?php echo $row['BookID']; ?>">
+                <?php echo htmlspecialchars($row['Title']); ?>
+            </a>
+        </td>
+
+        <td>
+            <?php echo htmlspecialchars($row['aName'] . ' ' . $row['aSurname']); ?>
+        </td>
+
+        <td>
+            <a href="customer_profile.php?CustomerID=<?php echo $row['CustomerID']; ?>">
+                <?php echo htmlspecialchars($row['FirstName'] . ' ' . $row['cSurname']); ?>
+            </a>
+        </td>
+
+        <td>
+            <?php echo htmlspecialchars($row['SaleDate']); ?>
+        </td>
+
+        <td>
+            <?php echo htmlspecialchars($row['Quantity']); ?>
+        </td>
+    </tr>
+<?php endforeach; ?>
+</tbody>
                     </table>
                 </div>
             </div>
@@ -145,7 +167,7 @@ if(isset($_SESSION['EmployeeID'])) {
             <p>Зв’яжіться з нами: +380-88-675-89-12</p>
         </div>
         <div class="col-lg-12 text-center">
-            <p>© 2026 BookLand. Kasianenko A.V. Всі права захищені.</p>
+            <p>© 2026 BookLand. Kasianenko A.V.Всі права захищені.</p>
         </div>
     </footer>
 

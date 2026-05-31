@@ -13,13 +13,13 @@ try {
     ]);
 
     // 1. Загальна кількість працівників
-    $totalStmt = $conn->query("SELECT COUNT(*) AS total FROM librarians");
+    $totalStmt = $conn->query("SELECT COUNT(*) AS total FROM employees");
     $totalEmployees = $totalStmt->fetch()['total'] ?? 0;
 
     // 2. Кількість за посадами (одним запитом)
     $stmt = $conn->query("
         SELECT Position, COUNT(*) AS cnt
-        FROM librarians
+        FROM employees
         GROUP BY Position
     ");
 
@@ -29,13 +29,13 @@ try {
     }
 
     // Безпечні значення (на випадок відсутності позицій)
-    $librarians = $positions['бібліотекар'] ?? 0;
-    $managers   = $positions['завідувач'] ?? 0;
+    $seller1 = $positions['продавець на повний робочий день'] ?? 0;
+    $seller2   = $positions['продавець на неповний робочий день'] ?? 0;
 
 } catch (PDOException $e) {
     $totalEmployees = 0;
-    $librarians = 0;
-    $managers = 0;
+    $seller1 = 0;
+    $seller2 = 0;
 }
 ?>
 
@@ -45,11 +45,11 @@ try {
 </div>
 
 <div class="col-lg-4 statistics books">
-    <h2>Кількість бібліотекарів</h2>
-    <p class="number"><?= htmlspecialchars($librarians) ?></p>
+    <h2>Кількість продавців на повний робочий день</h2>
+    <p class="number"><?= htmlspecialchars($seller1) ?></p>
 </div>
 
 <div class="col-lg-4 statistics books">
-    <h2>Кількість завідувачів</h2>
-    <p class="number"><?= htmlspecialchars($managers) ?></p>
+    <h2>Кількість продавців на неповний робочий день</h2>
+    <p class="number"><?= htmlspecialchars($seller2) ?></p>
 </div>
