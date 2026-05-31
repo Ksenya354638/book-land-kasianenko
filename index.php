@@ -21,29 +21,41 @@ try {
 
 session_start();
 
-if(isset($_POST['logIn'])) {
+if (isset($_POST['logIn'])) {
+
     $phoneNumber = $_POST['phoneNumber'];
     $password = $_POST['password'];
 
-    $query = $conn->prepare("SELECT EmployeeID, FirstName, ParentalName, PhoneNumber, Password
-                            FROM employees
-                            WHERE PhoneNumber = :phoneNumber AND Password = :password");
-    
+    $query = $conn->prepare("
+        SELECT EmployeeID, FirstName, ParentalName, PhoneNumber, Password
+        FROM employees
+        WHERE PhoneNumber = :phoneNumber
+    ");
+
     $query->execute([
-        ':phoneNumber' => $phoneNumber,
-        ':password' => $password
+        ':phoneNumber' => $phoneNumber
     ]);
 
     $employee = $query->fetch(PDO::FETCH_ASSOC);
 
-    if($employee && password_verify($password, $employee['Password'])) {
-       $_SESSION['EmployeeID'] = $employee['EmployeeID'];
-        header("Location: ./pages/home.php");
-        exit;
+    if ($employee) {
+
+        if (password_verify($password, $employee['Password'])) {
+
+            $_SESSION['EmployeeID'] = $employee['EmployeeID'];
+
+            header("Location: ./pages/home.php");
+            exit;
+
+        } else {
+            echo "<div class='validation-msg'>
+                    <h2>Помилка! Невірний пароль</h2>
+                  </div>";
+        }
+
     } else {
         echo "<div class='validation-msg'>
-                <img src='./images/error.svg' alt='error icon'>
-                <h2 class='validation-text'>Помилка! Не вдалося авторизуватися</h2>     
+                <h2>Помилка! Користувача не знайдено</h2>
               </div>";
     }
 }
