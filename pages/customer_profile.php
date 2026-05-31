@@ -170,13 +170,13 @@ $stmtSales->fetchAll(PDO::FETCH_ASSOC);
         <div class="col-lg-9 footer-left">
             <p>Слідкуйте за нами:</p>
             <a href="https://www.facebook.com/?locale=uk_UA">
-                <img src="./images/icon_facebook.svg" alt="фейсбук">
+                <img src="../images/icon_facebook.svg" alt="фейсбук">
             </a>
             <a href="https://www.instagram.com/">
-                <img src="./images/icon-instagram.svg" alt="інстаграм">
+                <img src="../images/icon-instagram.svg" alt="інстаграм">
             </a>
             <a href="https://twitter.com/?lang=uk">
-                <img src="./images/icon-twitterx.svg" alt="ікс">
+                <img src="../images/icon-twitterx.svg" alt="ікс">
             </a>
         </div>
         <div class="col-lg-3">

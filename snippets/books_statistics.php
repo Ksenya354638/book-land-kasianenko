@@ -19,7 +19,7 @@ try {
     $row2 = $conn->query("SELECT COUNT(*) AS BooksNumber FROM books WHERE Availability='в наявності'")
                  ->fetch(PDO::FETCH_ASSOC);
 
-    $row3 = $conn->query("SELECT COUNT(*) AS BooksNumber FROM books WHERE Availability='на руках'")
+    $row3 = $conn->query("SELECT COUNT(*) AS BooksNumber FROM books WHERE Availability='не в наявності'")
                  ->fetch(PDO::FETCH_ASSOC);
 
     $row4 = $conn->query("SELECT AVG(Price) AS BooksPrice FROM books")
@@ -44,7 +44,7 @@ try {
 </div>
 
 <div class="col-lg-3 statistics books">
-    <h2>Кількість книг на руках</h2>
+    <h2>Кількість книг не в наявності</h2>
     <p class="number"><?= $row3['BooksNumber'] ?? 0 ?></p>
 </div>
 
