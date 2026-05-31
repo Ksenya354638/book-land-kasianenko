@@ -177,10 +177,10 @@ body .footer .footer-left{
     padding: 3px;
 }
 .main-content .result-table tr{
-    background-color: #134074;
+    background-color: #DAE5D8;
 }
 .main-content .result-table tr:nth-child(even) {
-    background-color: #DAE5D8;
+    background-color: #EEF4ED;
 }
 .main-content .result-table.col-lg-12{
     margin-bottom: 20px;

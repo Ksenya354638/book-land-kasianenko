@@ -45,24 +45,26 @@ if (isset($_SESSION['EmployeeID'])) {
     $stmt = $conn->prepare($query);
     $stmt->execute($params);
 
-if(isset($_POST['sell'])) {
+if (isset($_POST['sell'])) {
 
-    if(isset($_SESSION['CustomerID'])) {
+    if (isset($_SESSION['CustomerID']) && isset($_POST['BookID'])) {
 
         $customerID = $_SESSION['CustomerID'];
-
         $employeeID = $_SESSION['EmployeeID'];
-
+        $bookID = $_POST['BookID'];
         $saleDate = date('Y-m-d');
 
-        if($book['Quantity'] > 0) {
+        // беремо книгу з БД
+        $stmtBook = $conn->prepare("SELECT Quantity FROM books WHERE BookID = ?");
+        $stmtBook->execute([$bookID]);
+        $book = $stmtBook->fetch(PDO::FETCH_ASSOC);
+
+        if ($book && $book['Quantity'] > 0) {
 
             $conn->prepare("
-            INSERT INTO sales
-            (BookID, CustomerID, EmployeeID, SaleDate, Quantity)
-            VALUES (?, ?, ?, ?, 1)
-            ")
-            ->execute([
+                INSERT INTO sales (BookID, CustomerID, EmployeeID, SaleDate, Quantity)
+                VALUES (?, ?, ?, ?, 1)
+            ")->execute([
                 $bookID,
                 $customerID,
                 $employeeID,
@@ -71,18 +73,15 @@ if(isset($_POST['sell'])) {
 
             $newQuantity = $book['Quantity'] - 1;
 
-            $availability =
-                ($newQuantity > 0)
-                ? 'В наявності'
-                : 'Немає в наявності';
+            $availability = ($newQuantity > 0)
+                ? 'в наявності'
+                : 'немає в наявності';
 
             $conn->prepare("
-            UPDATE books
-            SET Quantity=?,
-                Availability=?
-            WHERE BookID=?
-            ")
-            ->execute([
+                UPDATE books
+                SET Quantity = ?, Availability = ?
+                WHERE BookID = ?
+            ")->execute([
                 $newQuantity,
                 $availability,
                 $bookID
@@ -93,11 +92,8 @@ if(isset($_POST['sell'])) {
             header("Location: ./sales_list.php");
             exit;
         }
-    }
-    else {
-
+    } else {
         header("Location: ./customers_list.php?action=select_customer");
-
         exit;
     }
 }

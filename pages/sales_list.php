@@ -123,7 +123,6 @@ if (isset($_GET['logOut'])) {
                                 <th>Покупець</th>
                                 <th>Дата продажу</th>
                                 <th>Кількість</th>
-                                <th style="min-width: 150px;">Кількість</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -180,9 +179,3 @@ if (isset($_GET['logOut'])) {
     <script src="../js/bootstrap.min.js"></script>
 </body>
 </html>
-<?php
-} else {
-    header("Location: ../index.php");
-    exit;
-} 
-?>
