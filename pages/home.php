@@ -76,7 +76,7 @@ if (isset($_SESSION['EmployeeID'])) {
 
         <div class="functions col-lg-12">
             <h1>Можливості системи BookLand</h1>
-            <div class="col-lg-3 function"><a href="books_list.php"><h2>Книжки</h2><p>Переглядайте широкий вибір книг різних жанрів — від художньої літератури до професійних видань. Знаходьте те, що вам цікаво, і одразу оформлюйте покупку.</p></a></div>
+            <div class="col-lg-3 function"><a href="books_list.php"><h2>Книжки</h2><p>Переглядайте широкий вибір книг різних жанрів — від художньої літератури до професійних видань.</p></a></div>
             <div class="col-lg-3 function"><a href="author_list.php"><h2>Автори</h2><p>Дізнавайтеся більше про авторів, чиї книги представлені в магазині. Відкривайте нові імена та слідкуйте за улюбленими письменниками.</p></a></div>
             <div class="col-lg-3 function"><a href="customers_list.php"><h2>Клієнти</h2><p>Керуйте інформацією про покупців магазину, відстежуйте історію замовлень і вподобання клієнтів.</p></a></div>
             <div class="col-lg-3 function"><a href="employees_list.php"><h2>Співробітники</h2><p>Організуйте роботу команди магазину: адміністратори, менеджери та інші працівники, які забезпечують якісний сервіс.</p></a></div>
@@ -107,13 +107,13 @@ if (isset($_SESSION['EmployeeID'])) {
         <div class="col-lg-9 footer-left">
             <p>Слідкуйте за нами:</p>
             <a href="https://www.facebook.com/?locale=uk_UA">
-                <img src="./images/icon_facebook.svg" alt="фейсбук">
+                <img src="../images/icon_facebook.svg" alt="фейсбук">
             </a>
             <a href="https://www.instagram.com/">
-                <img src="./images/icon-instagram.svg" alt="інстаграм">
+                <img src="../images/icon-instagram.svg" alt="інстаграм">
             </a>
             <a href="https://twitter.com/?lang=uk">
-                <img src="./images/icon-twitterx.svg" alt="ікс">
+                <img src="../images/icon-twitterx.svg" alt="ікс">
             </a>
         </div>
         <div class="col-lg-3">
