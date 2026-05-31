@@ -14,15 +14,15 @@ try {
     die("Помилка БД: " . $e->getMessage()); 
 }
 
-if(isset($_SESSION['LibrarianID'])) {
+if(isset($_SESSION['EmployeeID'])) {
     $success = false;
     $error_msg = "";
 
-    if(isset($_POST['add-librarian'])){
+    if(isset($_POST['add-employee'])){
         try {
             $hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
             
-            $query = $conn->prepare("INSERT INTO librarians (FirstName, ParentalName, Surname, Address, PhoneNumber, BirthDate, EmploymentDate, Position, Password) 
+            $query = $conn->prepare("INSERT INTO employees (FirstName, ParentalName, Surname, Address, PhoneNumber, BirthDate, EmploymentDate, Position, Password) 
                                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
             
             $query->execute([
@@ -55,10 +55,10 @@ if(isset($_SESSION['LibrarianID'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
-    <title>Новий працівник | LibraVerse</title>
+    <title>Новий працівник | BookLand</title>
 </head>
 <body>
-    <nav class="navbar navbar-default">
+<nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu">
@@ -66,7 +66,7 @@ if(isset($_SESSION['LibrarianID'])) {
                 </button>
                 <div class="navbar-logo">
                     <img src="../images/logo.svg" alt="логотип">
-                    <a href="./home.php" id="main">LibraVerse</a>
+                    <a href="./home.php" id="main">BookLand</a>
                 </div>
             </div>
             <div class="collapse navbar-collapse" id="menu">
@@ -75,13 +75,14 @@ if(isset($_SESSION['LibrarianID'])) {
                   <li><a href="./customers_list.php">Клієнти</a></li>
                   <li><a href="./books_list.php">Книги</a></li>
                   <li><a href="./author_list.php">Автори</a></li> 
-                  <li><a href="./librarians_list.php">Працівники</a></li>
-                  <li><a href="./provision_list.php">Видача книг</a></li>
+                  <li><a href="./employees_list.php">Працівники</a></li>
+                  <li><a href="./sales_list.php">Видача книг</a></li>
                   <li><a href="?logOut=1" id="logOut">Вийти</a></li>
                 </ul>
             </div>
         </div>
     </nav>
+
 
     <div class="container main-content add" style="padding-top:20px;">
 
@@ -97,11 +98,11 @@ if(isset($_SESSION['LibrarianID'])) {
         </div>
     <?php endif; ?>
 
-    <div class="row librarian-layout">
+    <div class="row employee-layout">
     
     <!-- ФОРМА -->
     <div class="col-lg-7 col-md-7 col-sm-12 form-container d-flex">
-        <div class="book-form librarian-form">
+        <div class="book-form employee-form">
 
             <h1 class="text-center form-title">
                 Реєстрація працівника
@@ -147,8 +148,10 @@ if(isset($_SESSION['LibrarianID'])) {
                 <div class="form-group">
                     <label>Посада</label>
                     <select name="position" class="form-input">
-                        <option value="бібліотекар">Бібліотекар</option>
-                        <option value="завідуючий">Завідуючий</option>
+                        <option value="керівник">керівник</option>
+                        <option value="помічник керівника">помічник керівника</option>
+                        <option value="продавець на повний робочий день">продавець на повний робочий день</option>
+                        <option value="продавець на неповний робочий день">продавець на неповний робочий день</option>
                     </select>
                 </div>
 
@@ -158,7 +161,7 @@ if(isset($_SESSION['LibrarianID'])) {
                 </div>
 
                 <button type="submit"
-                        name="add-librarian"
+                        name="add-employee"
                         class="btn btn-primary btn-block submit-btn">
                     Зареєструвати
                 </button>
@@ -169,7 +172,7 @@ if(isset($_SESSION['LibrarianID'])) {
 
     <!-- ЗОБРАЖЕННЯ -->
     <div class="col-lg-5 col-md-5 hidden-xs image-container">
-        <img src="../images/add_librarian.png" class="img-responsive librarian-img">
+        <img src="../images/add_employee.png" class="img-responsive employee-img">
     </div>
 
 </div>
@@ -178,17 +181,24 @@ if(isset($_SESSION['LibrarianID'])) {
     <footer class="footer col-lg-12">
         <div class="col-lg-9 footer-left">
             <p>Слідкуйте за нами:</p>
-            <a href="#"><img src="../images/icon_facebook.svg" alt="фейсбук"></a>
-            <a href="#"><img src="../images/icon-instagram.svg" alt="інстаграм"></a>
-            <a href="#"><img src="../images/icon-twitterx.svg" alt="ікс"></a>
+            <a href="https://www.facebook.com/?locale=uk_UA">
+                <img src="./images/icon_facebook.svg" alt="фейсбук">
+            </a>
+            <a href="https://www.instagram.com/">
+                <img src="./images/icon-instagram.svg" alt="інстаграм">
+            </a>
+            <a href="https://twitter.com/?lang=uk">
+                <img src="./images/icon-twitterx.svg" alt="ікс">
+            </a>
         </div>
         <div class="col-lg-3">
             <p>Зв’яжіться з нами: +380-88-675-89-12</p>
         </div>
         <div class="col-lg-12 text-center">
-            <p>© 2026 LibraVerse. Всі права захищені.</p>
+            <p>© 2026 BookLand. Kasianenko A.V. Всі права захищені.</p>
         </div>
     </footer>
+
 </body>
 </html>
 <?php

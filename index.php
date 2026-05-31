@@ -25,19 +25,19 @@ if(isset($_POST['logIn'])) {
     $phoneNumber = $_POST['phoneNumber'];
     $password = $_POST['password'];
 
-    $query = $conn->prepare("SELECT LibrarianID, FirstName, ParentalName, PhoneNumber, Password 
-                             FROM librarians 
-                             WHERE PhoneNumber = :phoneNumber AND Password = :password");
+    $query = $conn->prepare("SELECT EmployeeID, FirstName, ParentalName, PhoneNumber, Password
+                            FROM employees
+                            WHERE PhoneNumber = :phoneNumber AND Password = :password");
     
     $query->execute([
         ':phoneNumber' => $phoneNumber,
         ':password' => $password
     ]);
 
-    $librarian = $query->fetch(PDO::FETCH_ASSOC);
+    $employee = $query->fetch(PDO::FETCH_ASSOC);
 
-    if ($librarian) {
-        $_SESSION['LibrarianID'] = $librarian['LibrarianID'];
+    if($employee && password_verify($password, $employee['Password'])) {
+       $_SESSION['EmployeeID'] = $employee['EmployeeID'];
         header("Location: ./pages/home.php");
         exit;
     } else {
@@ -61,7 +61,7 @@ if(isset($_POST['logIn'])) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="./js/bootstrap.min.js"></script>
     <script src="./js/script.js"></script>
-    <title>LibraVerse</title>
+    <title>BookLand</title>
 </head>
 <body>
     <div class="main-content auhorization">
@@ -93,7 +93,7 @@ if(isset($_POST['logIn'])) {
             <p>Зв’яжіться з нами: +380-88-675-89-12</p>
         </div>
         <div class="col-lg-12 text-center">
-            <p>© 2024 LibraVerse. Всі права захищені.</p>
+            <p>© 2026 BookLand. Kasianenko A.V. Всі права захищені.</p>
         </div>
     </footer>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

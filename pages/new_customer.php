@@ -22,7 +22,7 @@ try {
     $db_error = true;
 }
 
-if(isset($_SESSION['LibrarianID'])) {
+if(isset($_SESSION['EmployeeID'])) {
     $success = false;
     
     if(isset($_POST['add-customer'])){
@@ -62,10 +62,10 @@ if(isset($_SESSION['LibrarianID'])) {
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link href="https://fonts.cdnfonts.com/css/roboto" rel="stylesheet">
-    <title>Реєстрація читача | LibraVerse</title>
+    <title>Реєстрація читача | BookLand</title>
 </head>
 <body>
-    <nav class="navbar navbar-default">
+<nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu">
@@ -73,7 +73,7 @@ if(isset($_SESSION['LibrarianID'])) {
                 </button>
                 <div class="navbar-logo">
                     <img src="../images/logo.svg" alt="логотип">
-                    <a href="./home.php" id="main">LibraVerse</a>
+                    <a href="./home.php" id="main">BookLand</a>
                 </div>
             </div>
             <div class="collapse navbar-collapse" id="menu">
@@ -82,13 +82,14 @@ if(isset($_SESSION['LibrarianID'])) {
                   <li><a href="./customers_list.php">Клієнти</a></li>
                   <li><a href="./books_list.php">Книги</a></li>
                   <li><a href="./author_list.php">Автори</a></li> 
-                  <li><a href="./librarians_list.php">Працівники</a></li>
-                  <li><a href="./provision_list.php">Видача книг</a></li>
+                  <li><a href="./employees_list.php">Працівники</a></li>
+                  <li><a href="./sales_list.php">Видача книг</a></li>
                   <li><a href="?logOut=1" id="logOut">Вийти</a></li>
                 </ul>
             </div>
         </div>
     </nav>
+
 
     <?php if($success): ?>
     <div class="validation-msg done" style="margin: 15px 0;">
@@ -134,17 +135,24 @@ if(isset($_SESSION['LibrarianID'])) {
     <footer class="footer col-lg-12">
         <div class="col-lg-9 footer-left">
             <p>Слідкуйте за нами:</p>
-            <a href="#"><img src="../images/icon_facebook.svg" alt="фейсбук"></a>
-            <a href="#"><img src="../images/icon-instagram.svg" alt="інстаграм"></a>
-            <a href="#"><img src="../images/icon-twitterx.svg" alt="ікс"></a>
+            <a href="https://www.facebook.com/?locale=uk_UA">
+                <img src="./images/icon_facebook.svg" alt="фейсбук">
+            </a>
+            <a href="https://www.instagram.com/">
+                <img src="./images/icon-instagram.svg" alt="інстаграм">
+            </a>
+            <a href="https://twitter.com/?lang=uk">
+                <img src="./images/icon-twitterx.svg" alt="ікс">
+            </a>
         </div>
         <div class="col-lg-3">
             <p>Зв’яжіться з нами: +380-88-675-89-12</p>
         </div>
         <div class="col-lg-12 text-center">
-            <p>© 2026 LibraVerse. Всі права захищені.</p>
+            <p>© 2026 BookLand. Kasianenko A.V. Всі права захищені.</p>
         </div>
     </footer>
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>

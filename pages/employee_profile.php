@@ -19,36 +19,34 @@ try {
     die("Помилка підключення до бази даних. Перевірте налаштування Render.");
 }
 
-if(isset($_SESSION['LibrarianID'])) {
-    $librarianID = $_GET['LibrarianID'] ?? null;
-    $librarian = null;
+if(isset($_SESSION['EmployeeID'])) {
+    $employeeID = $_GET['EmployeeID'] ?? null;
+    $employee = null;
     $provisions = [];
 
-    if($librarianID) {
+    if($employeeID) {
         // 1. Дані працівника
-        $stmt1 = $conn->prepare("SELECT * FROM librarians WHERE LibrarianID = ?");
-        $stmt1->execute([$librarianID]);
-        $librarian = $stmt1->fetch(PDO::FETCH_ASSOC);
+        $stmt1 = $conn->prepare("SELECT * FROM employees WHERE EmployeeID = ?");
+        $stmt1->execute([$employeeID]);
+        $employee = $stmt1->fetch(PDO::FETCH_ASSOC);
 
-        if($librarian) {
+        if($employee) {
             // 2. Список виданих книг (латинська C у CustomerID)
-            $stmt2 = $conn->prepare("SELECT bp.ProvisionID, b.BookID, b.Title, 
-                                            c.CustomerID, c.FirstName, c.Surname, 
-                                            bp.ReceiptDate, bp.ReturnDate 
-                                     FROM booksprovision bp 
-                                     JOIN books b ON bp.BookID = b.BookID 
-                                     JOIN customers c ON bp.CustomerID = c.CustomerID 
-                                     WHERE bp.LibrarianID = ?
-                                     ORDER BY bp.ReceiptDate DESC");
-            $stmt2->execute([$librarianID]);
+            $stmt2 = $conn->prepare("SELECT s.SaleID, b.BookID, b.Title, c.CustomerID, c.FirstName, c.Surname, s.SaleDate, s.Quantity
+                                    FROM sales s
+                                    JOIN books b ON s.BookID = b.BookID
+                                    JOIN customers c ON s.CustomerID = c.CustomerID
+                                    WHERE s.EmployeeID = ?
+                                    ORDER BY s.SaleDate DESC");
+            $stmt2->execute([$employeeID]);
             $provisions = $stmt2->fetchAll(PDO::FETCH_ASSOC);
         }
 
         // 3. Видалення
         if(isset($_POST['delete'])) {
-            $stmt_del = $conn->prepare("DELETE FROM librarians WHERE LibrarianID = ?");
-            $stmt_del->execute([$librarianID]);
-            header("Location: librarians_list.php?deleted=success");
+            $stmt_del = $conn->prepare("DELETE FROM employees WHERE EmployeeID = ?");
+            $stmt_del->execute([$employeeID]);
+            header("Location: employees_list.php?deleted=success");
             exit;
         }
     }
@@ -67,10 +65,10 @@ if(isset($_SESSION['LibrarianID'])) {
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link href="https://fonts.cdnfonts.com/css/roboto" rel="stylesheet">
-    <title>Профіль працівника | LibraVerse</title>
+    <title>Профіль працівника | BookLand</title>
 </head>
 <body>
-    <nav class="navbar navbar-default">
+<nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu">
@@ -78,7 +76,7 @@ if(isset($_SESSION['LibrarianID'])) {
                 </button>
                 <div class="navbar-logo">
                     <img src="../images/logo.svg" alt="логотип">
-                    <a href="./home.php" id="main">LibraVerse</a>
+                    <a href="./home.php" id="main">BookLand</a>
                 </div>
             </div>
             <div class="collapse navbar-collapse" id="menu">
@@ -87,23 +85,24 @@ if(isset($_SESSION['LibrarianID'])) {
                   <li><a href="./customers_list.php">Клієнти</a></li>
                   <li><a href="./books_list.php">Книги</a></li>
                   <li><a href="./author_list.php">Автори</a></li> 
-                  <li><a href="./librarians_list.php">Працівники</a></li>
-                  <li><a href="./provision_list.php">Видача книг</a></li>
+                  <li><a href="./employees_list.php">Працівники</a></li>
+                  <li><a href="./sales_list.php">Видача книг</a></li>
                   <li><a href="?logOut=1" id="logOut">Вийти</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
+
     <div class="container main-content customer-profile">
-        <?php if ($librarian): ?>
+        <?php if ($employee): ?>
             <div class="row profile-info book-descript">
                 <div class="col-md-8">
-                    <h1><?php echo htmlspecialchars("{$librarian['Surname']} {$librarian['FirstName']} {$librarian['ParentalName']}"); ?></h1>
-                    <p><b>ID:</b> <?php echo $librarian['LibrarianID']; ?></p>
-                    <p><b>Посада:</b> <?php echo htmlspecialchars($librarian['Position']); ?></p>
-                    <p><b>Телефон:</b> <?php echo htmlspecialchars($librarian['PhoneNumber']); ?></p>
-                    <p><b>Адреса:</b> <?php echo htmlspecialchars($librarian['Address']); ?></p>
+                    <h1><?php echo htmlspecialchars("{$employee['Surname']} {$employee['FirstName']} {$employee['ParentalName']}"); ?></h1>
+                    <p><b>ID:</b> <?php echo $employee['EmployeeID']; ?></p>
+                    <p><b>Посада:</b> <?php echo htmlspecialchars($employee['Position']); ?></p>
+                    <p><b>Телефон:</b> <?php echo htmlspecialchars($employee['PhoneNumber']); ?></p>
+                    <p><b>Адреса:</b> <?php echo htmlspecialchars($employee['Address']); ?></p>
                 </div>
                 <div class="col-md-4 text-right">
                     <div class="buttons right" style="margin-top:20px;">
@@ -118,15 +117,15 @@ if(isset($_SESSION['LibrarianID'])) {
 
             <div class="row" style="margin-top: 40px;">
                 <div class="col-md-12">
-                    <h3>Історія видач:</h3>
+                    <h3>Історія продажів:</h3>
                     <div class="table-responsive">
                         <table class="table result-table col-lg-12">
                             <thead>
                                 <tr>
                                     <th>Книга</th>
                                     <th>Клієнт</th>
-                                    <th>Дата видачі</th>
-                                    <th>Статус</th>
+                                    <th>Дата продажу</th>
+                                    <th>Кількість</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -134,8 +133,8 @@ if(isset($_SESSION['LibrarianID'])) {
                                 <tr>
                                     <td><a href="book_profile.php?BookID=<?php echo $row['BookID']; ?>"><?php echo htmlspecialchars($row['Title']); ?></a></td>
                                     <td><a href="customer_profile.php?CustomerID=<?php echo $row['CustomerID']; ?>"><?php echo htmlspecialchars($row['Surname']); ?></a></td>
-                                    <td><?php echo $row['ReceiptDate']; ?></td>
-                                    <td><?php echo $row['ReturnDate'] ?: '<span class="status-badge taken">На руках</span>'; ?></td>
+                                    <td><?php echo $row['SaleDate']; ?></td>
+                                    <td><?php echo $row['Quantity'] ?: '<span class="status-badge taken">На руках</span>'; ?></td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -150,17 +149,24 @@ if(isset($_SESSION['LibrarianID'])) {
     <footer class="footer col-lg-12">
         <div class="col-lg-9 footer-left">
             <p>Слідкуйте за нами:</p>
-            <a href="#"><img src="../images/icon_facebook.svg" alt="фейсбук"></a>
-            <a href="#"><img src="../images/icon-instagram.svg" alt="інстаграм"></a>
-            <a href="#"><img src="../images/icon-twitterx.svg" alt="ікс"></a>
+            <a href="https://www.facebook.com/?locale=uk_UA">
+                <img src="./images/icon_facebook.svg" alt="фейсбук">
+            </a>
+            <a href="https://www.instagram.com/">
+                <img src="./images/icon-instagram.svg" alt="інстаграм">
+            </a>
+            <a href="https://twitter.com/?lang=uk">
+                <img src="./images/icon-twitterx.svg" alt="ікс">
+            </a>
         </div>
         <div class="col-lg-3">
             <p>Зв’яжіться з нами: +380-88-675-89-12</p>
         </div>
         <div class="col-lg-12 text-center">
-            <p>© 2026 LibraVerse. Всі права захищені.</p>
+            <p>© 2026 BookLand. Kasianenko A.V. Всі права захищені.</p>
         </div>
     </footer>
+
 </body>
 </html>
 <?php 

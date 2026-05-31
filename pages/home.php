@@ -23,7 +23,7 @@ if (isset($_GET['logOut'])) {
     header("Location: ../index.php");
 }
 
-if (isset($_SESSION['LibrarianID'])) {
+if (isset($_SESSION['EmployeeID'])) {
 ?>
 <!DOCTYPE html>
 <html lang="uk_UA">
@@ -37,43 +37,40 @@ if (isset($_SESSION['LibrarianID'])) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
     <script src="../js/script.js"></script>
-    <title>LibraVerse - Головна</title>
+    <title>BookLand - Головна</title>
 </head>
 <body>
-    <nav class="navbar navbar-default">
+<nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed visible-xs" data-toggle="collapse" data-target="#menu" aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu">
+                    <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
                 </button>
                 <div class="navbar-logo">
                     <img src="../images/logo.svg" alt="логотип">
-                    <a href="home.php" id="main">LibraVerse</a>
+                    <a href="./home.php" id="main">BookLand</a>
                 </div>
             </div>
-            
             <div class="collapse navbar-collapse" id="menu">
                 <ul class="nav navbar-nav navbar-right text-center">
-                    <li><a href="home.php" id="main">Головна</a></li>
-                    <li><a href="customers_list.php" id="customers">Клієнти</a></li>
-                    <li><a href="books_list.php" id="books">Книги</a></li>
-                    <li><a href="author_list.php" id="authors">Автори</a></li> 
-                    <li><a href="librarians_list.php" id="librarians">Працівники</a></li>
-                    <li><a href="provision_list.php" id="provision">Видача книг</a></li>
-                    <li><a href="?logOut=true" id="logOut">Вийти</a></li>
+                  <li><a href="./home.php">Головна</a></li>
+                  <li><a href="./customers_list.php">Клієнти</a></li>
+                  <li><a href="./books_list.php">Книги</a></li>
+                  <li><a href="./author_list.php">Автори</a></li> 
+                  <li><a href="./employees_list.php">Працівники</a></li>
+                  <li><a href="./sales_list.php">Видача книг</a></li>
+                  <li><a href="?logOut=1" id="logOut">Вийти</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
+
     <div class="main-content" id="main-content">
         <div class="banner col-lg-12">
             <div class="banner-text col-lg-5">
-                <h1>Вітаємо у LibraVerse!</h1>
-                <p>У LibraVerse ми віримо у трансформаційну силу книги та важливість розвитку спільноти, побудованої на знаннях, дослідженнях та уяві. Наша місія - забезпечити зручний та практичний облік книг для сучасних бібліотек!</p>
+                <h1>Вітаємо у BookLand!</h1>
+                <p>У BookLand ми віримо у трансформаційну силу книги та важливість розвитку спільноти, побудованої на знаннях, дослідженнях та уяві. Наша місія - забезпечити зручний та практичний облік книг для сучасних бібліотек!</p>
             </div>
         </div>
 
@@ -82,7 +79,7 @@ if (isset($_SESSION['LibrarianID'])) {
             <div class="col-lg-3 function"><a href="books_list.php"><h2>Книжковий каталог</h2><p>Пориньте до вашої великої книжкової колекції різних видань і жанрів, від вічної класики до сучасних бестселерів</p></a></div>
             <div class="col-lg-3 function"><a href="author_list.php"><h2>Профілі авторів</h2><p>Ведіть облік усіх авторів, що стоять за вашими книжками. Стежте за новими іменами і досліджуйте їх біографії</p></a></div>
             <div class="col-lg-3 function"><a href="customers_list.php"><h2>Облікові записи клієнтів</h2><p>Створіть облікові записи ваших клієнтів, щоб відстежувати свій прогрес у кількості виданих книг і клієнтів бібліотеки</p></a></div>
-            <div class="col-lg-3 function"><a href="librarians_list.php"><h2>Профілі співробітників</h2><p>Систематизовано зберігайте інформацію про відданих своїй справі людей, які  працюють для успіху бібліотечної справи</p></a></div>
+            <div class="col-lg-3 function"><a href="employees_list.php"><h2>Профілі співробітників</h2><p>Систематизовано зберігайте інформацію про відданих своїй справі людей, які  працюють для успіху бібліотечної справи</p></a></div>
         </div>
 
         <div class="functions col-lg-12">
@@ -90,27 +87,33 @@ if (isset($_SESSION['LibrarianID'])) {
             <div class="col-lg-12 menu">
                 <a href="#" id="booksStatistics" class="col-lg-4">Статистика за книгами</a>
                 <a href="#" id="customersStatistics" class="col-lg-4">Статистика за клієнтами</a>
-                <a href="#" id="librariansStatistics" class="col-lg-4">Статистика за працівниками</a>
+                <a href="#" id="employeesStatistics" class="col-lg-4">Статистика за працівниками</a>
             </div>
-            <div name="libraryStatistics" id="libraryStatistics" class="col-lg-12">
+            <div name="employeesStatistics" id="employeesStatistics" class="col-lg-12">
                 </div>
         </div>
     </div>
-
     <footer class="footer col-lg-12">
         <div class="col-lg-9 footer-left">
             <p>Слідкуйте за нами:</p>
-            <a href="#"><img src="../images/icon_facebook.svg" alt="фейсбук"></a>
-            <a href="#"><img src="../images/icon-instagram.svg" alt="інстаграм"></a>
-            <a href="#"><img src="../images/icon-twitterx.svg" alt="ікс"></a>
+            <a href="https://www.facebook.com/?locale=uk_UA">
+                <img src="./images/icon_facebook.svg" alt="фейсбук">
+            </a>
+            <a href="https://www.instagram.com/">
+                <img src="./images/icon-instagram.svg" alt="інстаграм">
+            </a>
+            <a href="https://twitter.com/?lang=uk">
+                <img src="./images/icon-twitterx.svg" alt="ікс">
+            </a>
         </div>
         <div class="col-lg-3">
             <p>Зв’яжіться з нами: +380-88-675-89-12</p>
         </div>
         <div class="col-lg-12 text-center">
-            <p>© 2026 LibraVerse. Всі права захищені.</p>
+            <p>© 2026 BookLand. Kasianenko A.V. Всі права захищені.</p>
         </div>
     </footer>
+
 </body>
 </html>
 <?php
@@ -122,7 +125,7 @@ if (isset($_SESSION['LibrarianID'])) {
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
-    <title>Помилка - LibraVerse</title>
+    <title>Помилка - BookLand</title>
 </head>
 <body>
     <div class="main-content error-msg text-center">

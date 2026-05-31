@@ -16,7 +16,7 @@ try {
     die("<div class='validation-msg'><h2>Помилка підключення до БД</h2></div>");
 }
 
-if(isset($_SESSION['LibrarianID'])){
+if(isset($_SESSION['EmployeeID'])){
     // Використовуємо LEFT JOIN, щоб бачити авторів навіть без книг
     $query = "SELECT authors.AuthorID, authors.Name, authors.Surname, authors.BirthYear, COUNT(books.BookID) AS BookCount 
               FROM authors 
@@ -38,7 +38,7 @@ if(isset($_SESSION['LibrarianID'])){
 
     if (isset($_GET['logOut'])){
         session_unset();
-        header("Location: ./librarian_authorization.php");
+        header("Location: ./index.php");
         exit;
     }
 ?>
@@ -49,15 +49,18 @@ if(isset($_SESSION['LibrarianID'])){
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
-    <title>LibraVerse - Автори</title>
+    <title>BookLand - Автори</title>
 </head>
 <body>
-    <nav class="navbar navbar-default">
+<nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu">
+                    <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+                </button>
                 <div class="navbar-logo">
                     <img src="../images/logo.svg" alt="логотип">
-                    <a href="./home.php" id="main">LibraVerse</a>
+                    <a href="./home.php" id="main">BookLand</a>
                 </div>
             </div>
             <div class="collapse navbar-collapse" id="menu">
@@ -66,9 +69,9 @@ if(isset($_SESSION['LibrarianID'])){
                   <li><a href="./customers_list.php">Клієнти</a></li>
                   <li><a href="./books_list.php">Книги</a></li>
                   <li><a href="./author_list.php">Автори</a></li> 
-                  <li><a href="./librarians_list.php">Працівники</a></li>
-                  <li><a href="./provision_list.php">Видача книг</a></li>
-                  <li><a href="?logOut=1">Вийти</a></li>
+                  <li><a href="./employees_list.php">Працівники</a></li>
+                  <li><a href="./sales_list.php">Видача книг</a></li>
+                  <li><a href="?logOut=1" id="logOut">Вийти</a></li>
                 </ul>
             </div>
         </div>
@@ -110,20 +113,27 @@ if(isset($_SESSION['LibrarianID'])){
             </div>
         </div>
     </div>
-        <footer class="footer col-lg-12">
+    <footer class="footer col-lg-12">
         <div class="col-lg-9 footer-left">
             <p>Слідкуйте за нами:</p>
-            <a href="#"><img src="../images/icon_facebook.svg" alt="фейсбук"></a>
-            <a href="#"><img src="../images/icon-instagram.svg" alt="інстаграм"></a>
-            <a href="#"><img src="../images/icon-twitterx.svg" alt="ікс"></a>
+            <a href="https://www.facebook.com/?locale=uk_UA">
+                <img src="./images/icon_facebook.svg" alt="фейсбук">
+            </a>
+            <a href="https://www.instagram.com/">
+                <img src="./images/icon-instagram.svg" alt="інстаграм">
+            </a>
+            <a href="https://twitter.com/?lang=uk">
+                <img src="./images/icon-twitterx.svg" alt="ікс">
+            </a>
         </div>
         <div class="col-lg-3">
             <p>Зв’яжіться з нами: +380-88-675-89-12</p>
         </div>
         <div class="col-lg-12 text-center">
-            <p>© 2026 LibraVerse. Всі права захищені.</p>
+            <p>© 2026 BookLand. Kasianenko A.V. Всі права захищені.</p>
         </div>
-        </footer>
+    </footer>
+
     </body>
 </html>
 <?php 

@@ -19,10 +19,10 @@ try {
     die("Помилка підключення до бази даних: " . $e->getMessage());
 }
 
-if(isset($_SESSION['LibrarianID'])) {
+if(isset($_SESSION['EmployeeID'])) {
     // Отримуємо список усіх працівників
-    $stmt = $conn->query("SELECT * FROM librarians");
-    $librarians = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $conn->query("SELECT * FROM employees");
+    $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Логіка виходу
     if (isset($_GET['logOut'])){
@@ -39,10 +39,10 @@ if(isset($_SESSION['LibrarianID'])) {
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link href="https://fonts.cdnfonts.com/css/roboto" rel="stylesheet">
-    <title>Працівники | LibraVerse</title>
+    <title>Працівники | BookLand</title>
 </head>
 <body>
-    <nav class="navbar navbar-default">
+<nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu">
@@ -50,7 +50,7 @@ if(isset($_SESSION['LibrarianID'])) {
                 </button>
                 <div class="navbar-logo">
                     <img src="../images/logo.svg" alt="логотип">
-                    <a href="./home.php" id="main">LibraVerse</a>
+                    <a href="./home.php" id="main">BookLand</a>
                 </div>
             </div>
             <div class="collapse navbar-collapse" id="menu">
@@ -59,13 +59,14 @@ if(isset($_SESSION['LibrarianID'])) {
                   <li><a href="./customers_list.php">Клієнти</a></li>
                   <li><a href="./books_list.php">Книги</a></li>
                   <li><a href="./author_list.php">Автори</a></li> 
-                  <li><a href="./librarians_list.php">Працівники</a></li>
-                  <li><a href="./provision_list.php">Видача книг</a></li>
+                  <li><a href="./employees_list.php">Працівники</a></li>
+                  <li><a href="./sales_list.php">Видача книг</a></li>
                   <li><a href="?logOut=1" id="logOut">Вийти</a></li>
                 </ul>
             </div>
         </div>
     </nav>
+
 
     <div class="container main-content">
         <?php if(isset($_GET['deleted'])): ?>
@@ -78,7 +79,7 @@ if(isset($_SESSION['LibrarianID'])) {
         
         <div class="row" style="margin-bottom: 20px;">
             <div class="col-md-12">
-                <a href="new_librarian.php" class="btn btn-primary">Зареєструвати нового працівника</a>
+                <a href="new_employee.php" class="btn btn-primary">Зареєструвати нового працівника</a>
             </div>
         </div>
 
@@ -97,10 +98,10 @@ if(isset($_SESSION['LibrarianID'])) {
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($librarians as $row): ?>
+                            <?php foreach ($employees as $row): ?>
                                 <tr>
-                                    <td><a href="librarian_profile.php?LibrarianID=<?php echo $row['LibrarianID']; ?>"><?php echo $row['LibrarianID']; ?></a></td>
-                                    <td><a href="librarian_profile.php?LibrarianID=<?php echo $row['LibrarianID']; ?>"><?php echo htmlspecialchars($row['Surname']); ?></a></td>
+                                    <td><a href="employee_profile.php?EmployeeID=<?php echo $row['EmployeeID']; ?>"><?php echo $row['EmployeeID']; ?></a></td>
+                                    <td><a href="employee_profile.php?EmployeeID=<?php echo $row['EmployeeID']; ?>"><?php echo htmlspecialchars($row['Surname']); ?></a></td>
                                     <td><?php echo htmlspecialchars($row['FirstName']); ?></td>
                                     <td><?php echo htmlspecialchars($row['ParentalName']); ?></td>
                                     <td><?php echo htmlspecialchars($row['Address']); ?></td>
@@ -117,17 +118,24 @@ if(isset($_SESSION['LibrarianID'])) {
     <footer class="footer col-lg-12">
         <div class="col-lg-9 footer-left">
             <p>Слідкуйте за нами:</p>
-            <a href="#"><img src="../images/icon_facebook.svg" alt="фейсбук"></a>
-            <a href="#"><img src="../images/icon-instagram.svg" alt="інстаграм"></a>
-            <a href="#"><img src="../images/icon-twitterx.svg" alt="ікс"></a>
+            <a href="https://www.facebook.com/?locale=uk_UA">
+                <img src="./images/icon_facebook.svg" alt="фейсбук">
+            </a>
+            <a href="https://www.instagram.com/">
+                <img src="./images/icon-instagram.svg" alt="інстаграм">
+            </a>
+            <a href="https://twitter.com/?lang=uk">
+                <img src="./images/icon-twitterx.svg" alt="ікс">
+            </a>
         </div>
         <div class="col-lg-3">
             <p>Зв’яжіться з нами: +380-88-675-89-12</p>
         </div>
         <div class="col-lg-12 text-center">
-            <p>© 2026 LibraVerse. Всі права захищені.</p>
+            <p>© 2026 BookLand. Kasianenko A.V. Всі права захищені.</p>
         </div>
     </footer>
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
@@ -143,7 +151,7 @@ if(isset($_SESSION['LibrarianID'])) {
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
-    <title>Помилка | LibraVerse</title>
+    <title>Помилка | BookLand</title>
 </head>
 <body>
     <div class="container text-center" style="margin-top: 100px;">

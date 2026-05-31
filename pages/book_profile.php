@@ -15,7 +15,7 @@ try {
     die("<div class='validation-msg'><h2>Помилка підключення до бази даних</h2></div>");
 }
 
-if (isset($_SESSION['LibrarianID'])) {
+if (isset($_SESSION['EmployeeID'])) {
     $book = null;
     
     if (isset($_GET['BookID'])) {
@@ -35,27 +35,62 @@ if (isset($_SESSION['LibrarianID'])) {
             exit;
         }
 
-        if (isset($_POST['provide'])) {
-            if (isset($_SESSION['CustomerID'])) {
-                $customerID = $_SESSION['CustomerID'];
-                $librarianID = $_SESSION['LibrarianID'];
-                $receiptDate = date("Y-m-d");
+        if(isset($_POST['sell'])) {
 
-                $provideStmt = $conn->prepare("INSERT INTO booksprovision (BookID, CustomerID, LibrarianID, ReceiptDate, ReturnDate) 
-                                               VALUES (?, ?, ?, ?, NULL)");
-                $provideStmt->execute([$bookID, $customerID, $librarianID, $receiptDate]);
+    if(isset($_SESSION['CustomerID'])) {
 
-                $updateStmt = $conn->prepare("UPDATE books SET Status = 'на руках' WHERE BookID = ?");
-                $updateStmt->execute([$bookID]);
+        $customerID = $_SESSION['CustomerID'];
 
-                unset($_SESSION['CustomerID']);
-                header("Location: ./provision_list.php");
-                exit;
-            } else {
-                header("Location: ./customers_list.php?action=select_for_book&BookID=" . $bookID);
-                exit;
-            }
+        $employeeID = $_SESSION['EmployeeID'];
+
+        $saleDate = date('Y-m-d');
+
+        if($book['Quantity'] > 0) {
+
+            $conn->prepare("
+            INSERT INTO sales
+            (BookID, CustomerID, EmployeeID, SaleDate, Quantity)
+            VALUES (?, ?, ?, ?, 1)
+            ")
+            ->execute([
+                $bookID,
+                $customerID,
+                $employeeID,
+                $saleDate
+            ]);
+
+            $newQuantity = $book['Quantity'] - 1;
+
+            $availability =
+                ($newQuantity > 0)
+                ? 'В наявності'
+                : 'Немає в наявності';
+
+            $conn->prepare("
+            UPDATE books
+            SET Quantity=?,
+                Availability=?
+            WHERE BookID=?
+            ")
+            ->execute([
+                $newQuantity,
+                $availability,
+                $bookID
+            ]);
+
+            unset($_SESSION['CustomerID']);
+
+            header("Location: ./sales_list.php");
+            exit;
         }
+    }
+    else {
+
+        header("Location: ./customers_list.php?action=select_customer");
+
+        exit;
+    }
+}
     }
 
     if (isset($_GET['logOut'])) {
@@ -72,7 +107,7 @@ if (isset($_SESSION['LibrarianID'])) {
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link href="https://fonts.cdnfonts.com/css/roboto" rel="stylesheet">
-    <title>LibraVerse - Профіль книги</title>
+    <title>BookLand - Профіль книги</title>
 </head>
 <body>
     <nav class="navbar navbar-default">
@@ -83,7 +118,7 @@ if (isset($_SESSION['LibrarianID'])) {
                 </button>
                 <div class="navbar-logo">
                     <img src="../images/logo.svg" alt="логотип">
-                    <a href="./home.php" id="main">LibraVerse</a>
+                    <a href="./home.php" id="main">BookLand</a>
                 </div>
             </div>
             <div class="collapse navbar-collapse" id="menu">
@@ -92,13 +127,14 @@ if (isset($_SESSION['LibrarianID'])) {
                   <li><a href="./customers_list.php">Клієнти</a></li>
                   <li><a href="./books_list.php">Книги</a></li>
                   <li><a href="./author_list.php">Автори</a></li> 
-                  <li><a href="./librarians_list.php">Працівники</a></li>
-                  <li><a href="./provision_list.php">Видача книг</a></li>
+                  <li><a href="./employees_list.php">Працівники</a></li>
+                  <li><a href="./sales_list.php">Видача книг</a></li>
                   <li><a href="?logOut=1" id="logOut">Вийти</a></li>
                 </ul>
             </div>
         </div>
     </nav>
+
 
     <div class="container main-content profile">
         <?php if ($book): ?>
@@ -124,9 +160,12 @@ if (isset($_SESSION['LibrarianID'])) {
                     <p><b>Рік:</b> <?php echo htmlspecialchars($book['Year']); ?></p>
                     <p><b>Ціна:</b> <?php echo htmlspecialchars($book['Price']); ?> грн.</p>
                     <p><b>Статус:</b> 
-                        <div class="status-badge <?php echo ($book['Status'] == 'в наявності') ? 'available' : 'taken'; ?>">
-                            <?php echo htmlspecialchars($book['Status']); ?>
+                        <div class="status-badge <?php echo ($book['Availability'] == 'в наявності') ? 'available' : 'taken'; ?>">
+                            <?php echo htmlspecialchars($book['Availability']); ?>
                         </div>
+                    </p>
+                    <p><b>Кількість на складі:</b>
+                        <?php echo $book['Quantity']; ?>
                     </p>
                     
                     <?php if (!empty($book['Abstract'])): ?>
@@ -140,12 +179,12 @@ if (isset($_SESSION['LibrarianID'])) {
                 <div class="col-md-3 text-right">
                     <form method="POST">
                         <div class="buttons right">
-                            <?php if ($book['Status'] == 'в наявності'): ?>
+                            <?php if ($book['Availability'] == 'в наявності'): ?>
                             <button type="submit" name="provide" class="provide">
-                                Видати книгу
+                                Продати книгу
                             </button>
                             <?php else: ?>
-                            <div class="status">Книга на руках</div>
+                            <div class="status">Книга розпродана</div>
                             <?php endif; ?>
 
                             <button type="submit" name="delete" class="delete"
@@ -160,20 +199,27 @@ if (isset($_SESSION['LibrarianID'])) {
             <div class="alert alert-danger">Книгу з таким ID не знайдено.</div>
         <?php endif; ?>
     </div>
-        <footer class="footer col-lg-12">
+    <footer class="footer col-lg-12">
         <div class="col-lg-9 footer-left">
             <p>Слідкуйте за нами:</p>
-            <a href="#"><img src="../images/icon_facebook.svg" alt="фейсбук"></a>
-            <a href="#"><img src="../images/icon-instagram.svg" alt="інстаграм"></a>
-            <a href="#"><img src="../images/icon-twitterx.svg" alt="ікс"></a>
+            <a href="https://www.facebook.com/?locale=uk_UA">
+                <img src="./images/icon_facebook.svg" alt="фейсбук">
+            </a>
+            <a href="https://www.instagram.com/">
+                <img src="./images/icon-instagram.svg" alt="інстаграм">
+            </a>
+            <a href="https://twitter.com/?lang=uk">
+                <img src="./images/icon-twitterx.svg" alt="ікс">
+            </a>
         </div>
         <div class="col-lg-3">
             <p>Зв’яжіться з нами: +380-88-675-89-12</p>
         </div>
         <div class="col-lg-12 text-center">
-            <p>© 2026 LibraVerse. Всі права захищені.</p>
+            <p>© 2026 BookLand. Kasianenko A.V. Всі права захищені.</p>
         </div>
     </footer>
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>

@@ -9,7 +9,7 @@ try {
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) { die("Помилка БД"); }
 
-if(isset($_SESSION['LibrarianID'])) {
+if(isset($_SESSION['EmployeeID'])) {
     if(isset($_GET['CustomerID'])) {
         $customerID = $_GET['CustomerID'];
 
@@ -18,24 +18,29 @@ if(isset($_SESSION['LibrarianID'])) {
         $stmt->execute([$customerID]);
         $customer = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // 2. Книги на руках (Шукаємо тільки ті, де ReturnDate є NULL)
-        $stmtActive = $conn->prepare("SELECT bp.ProvisionID, bp.BookID, bp.LibrarianID, b.Title, l.FirstName, l.Surname, bp.ReceiptDate 
-            FROM booksprovision bp 
-            JOIN books b ON bp.BookID = b.BookID 
-            JOIN librarians l ON bp.LibrarianID = l.LibrarianID 
-            WHERE bp.CustomerID = ? AND bp.ReturnDate IS NULL"); 
-        $stmtActive->execute([$customerID]);
-        $activeBooks = $stmtActive->fetchAll(PDO::FETCH_ASSOC);
+        $stmtSales = $conn->prepare("
+SELECT
+s.SaleID,
+s.SaleDate,
+s.Quantity,
+b.BookID,
+b.Title,
+e.FirstName,
+e.Surname
+FROM sales s
+JOIN books b
+ON s.BookID=b.BookID
+JOIN employees e
+ON s.EmployeeID=e.EmployeeID
+WHERE s.CustomerID=?
+ORDER BY s.SaleDate DESC
+");
 
-        // 3. Історія (Тільки ті, де ReturnDate МАЄ значення)
-        $stmtHistory = $conn->prepare("SELECT bp.ProvisionID, bp.BookID, b.Title, l.FirstName, l.Surname, bp.ReceiptDate, bp.ReturnDate 
-            FROM booksprovision bp 
-            JOIN books b ON bp.BookID = b.BookID 
-            JOIN librarians l ON bp.LibrarianID = l.LibrarianID 
-            WHERE bp.CustomerID = ? AND bp.ReturnDate IS NOT NULL
-            ORDER BY bp.ReturnDate DESC");
-        $stmtHistory->execute([$customerID]);
-        $historyBooks = $stmtHistory->fetchAll(PDO::FETCH_ASSOC);
+$stmtSales->execute([$customerID]);
+
+$salesHistory =
+$stmtSales->fetchAll(PDO::FETCH_ASSOC);
+
 
         // --- ЛОГІКА ДІЙ ---
         if(isset($_POST['delete'])) {
@@ -45,17 +50,8 @@ if(isset($_SESSION['LibrarianID'])) {
             exit;
         }
 
-        if(isset($_POST['return'])) {
-            $provID = $_POST['return'];
-            $bookID = $_POST['bookID'];
-            $now = date("Y-m-d");
-            $conn->prepare("UPDATE booksprovision SET ReturnDate = ? WHERE ProvisionID = ?")->execute([$now, $provID]);
-            $conn->prepare("UPDATE books SET Status = 'в наявності' WHERE BookID = ?")->execute([$bookID]);
-            header("Location: ./customer_profile.php?CustomerID=$customerID");
-            exit;
-        }
 
-        if(isset($_POST['provide'])) {
+        if(isset($_POST['sell'])) {
             $_SESSION['CustomerID'] = $customerID;
             header("Location: ./books_list.php"); 
             exit;
@@ -67,10 +63,10 @@ if(isset($_SESSION['LibrarianID'])) {
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
-    <title>Профіль клієнта | LibraVerse</title>
+    <title>Профіль клієнта | BookLand</title>
 </head>
 <body>
-    <nav class="navbar navbar-default">
+<nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu">
@@ -78,7 +74,7 @@ if(isset($_SESSION['LibrarianID'])) {
                 </button>
                 <div class="navbar-logo">
                     <img src="../images/logo.svg" alt="логотип">
-                    <a href="./home.php" id="main">LibraVerse</a>
+                    <a href="./home.php" id="main">BookLand</a>
                 </div>
             </div>
             <div class="collapse navbar-collapse" id="menu">
@@ -87,13 +83,14 @@ if(isset($_SESSION['LibrarianID'])) {
                   <li><a href="./customers_list.php">Клієнти</a></li>
                   <li><a href="./books_list.php">Книги</a></li>
                   <li><a href="./author_list.php">Автори</a></li> 
-                  <li><a href="./librarians_list.php">Працівники</a></li>
-                  <li><a href="./provision_list.php">Видача книг</a></li>
+                  <li><a href="./employees_list.php">Працівники</a></li>
+                  <li><a href="./sales_list.php">Видача книг</a></li>
                   <li><a href="?logOut=1" id="logOut">Вийти</a></li>
                 </ul>
             </div>
         </div>
     </nav>
+
 
     <div class="container main-content customer-profile">
         <?php if ($customer): ?>
@@ -114,8 +111,8 @@ if(isset($_SESSION['LibrarianID'])) {
         </form>
 
         <form method="POST">
-            <button type="submit" name="provide" class="add" style="width:100%;">
-                Видати нову книгу
+            <button type="submit" name="sell" class="add" style="width:100%;">
+                Оформити покупку
             </button>
         </form>
 
@@ -124,33 +121,22 @@ if(isset($_SESSION['LibrarianID'])) {
 
             <hr>
 
-            <h3>Книги на руках:</h3>
+            <h3>Історія покупок:</h3>
             <table class="table result-table col-lg-12" style="margin-top:15px;">
                 <tr>
-                    <th>ID</th><th>Книга</th><th>Бібліотекар</th><th>Дата видачі</th><th>Дія</th>
+                    <th>ID продажу</th>
+                    <th>Книга</th>
+                    <th>Продавець</th>
+                    <th>Дата продажу</th>
+                    <th>Кількість</th>
                 </tr>
-                <?php if (empty($activeBooks)): ?>
-                    <tr><td colspan="5" class="text-center">Немає книг на руках</td></tr>
-                <?php else: ?>
-                    <?php foreach ($activeBooks as $row): ?>
+                <?php foreach($salesHistory as $row): ?>
                     <tr>
-                        <td><?php echo $row['ProvisionID']; ?></td>
-                        <td><a href="./book_profile.php?BookID=<?php echo $row['BookID']; ?>"><?php echo htmlspecialchars($row['Title']); ?></a></td>
-                        <td><?php echo htmlspecialchars($row['FirstName'] . " " . $row['Surname']); ?></td>
-                        <td><?php echo $row['ReceiptDate']; ?></td>
-                        <td>
-                            <form method="POST">
-                                <input type="hidden" name="bookID" value="<?php echo $row['BookID']; ?>">
-                                    <button 
-                                        type="submit" 
-                                        name="return" 
-                                        value="<?php echo $row['ProvisionID']; ?>" 
-                                        class="provide"
-                                        style="width:100%; margin-top:5px;">
-                                    Повернуто
-                                </button>
-                            </form>
-                        </td>
+                        <td><?php echo $row['SaleID']; ?></td>
+                        <td><?php echo $row['Title']; ?></td>
+                        <td><?php echo $row['FirstName'].' '.$row['Surname']; ?></td>
+                        <td><?php echo $row['SaleDate']; ?></td>
+                        <td><?php echo $row['Quantity']; ?></td>
                     </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -168,8 +154,7 @@ if(isset($_SESSION['LibrarianID'])) {
                     <tr>
                         <td><?php echo $row['ProvisionID']; ?></td>
                         <td><?php echo htmlspecialchars($row['Title']); ?></td>
-                        <td><?php echo $row['ReceiptDate']; ?></td>
-                        <td><?php echo $row['ReturnDate']; ?></td>
+                        <td><?php echo $row['SaleDate']; ?></td>
                     </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -179,20 +164,27 @@ if(isset($_SESSION['LibrarianID'])) {
             <div class="alert alert-danger">Клієнта не знайдено!</div>
         <?php endif; ?>
     </div>
-        <footer class="footer col-lg-12">
+    <footer class="footer col-lg-12">
         <div class="col-lg-9 footer-left">
             <p>Слідкуйте за нами:</p>
-            <a href="#"><img src="../images/icon_facebook.svg" alt="фейсбук"></a>
-            <a href="#"><img src="../images/icon-instagram.svg" alt="інстаграм"></a>
-            <a href="#"><img src="../images/icon-twitterx.svg" alt="ікс"></a>
+            <a href="https://www.facebook.com/?locale=uk_UA">
+                <img src="./images/icon_facebook.svg" alt="фейсбук">
+            </a>
+            <a href="https://www.instagram.com/">
+                <img src="./images/icon-instagram.svg" alt="інстаграм">
+            </a>
+            <a href="https://twitter.com/?lang=uk">
+                <img src="./images/icon-twitterx.svg" alt="ікс">
+            </a>
         </div>
         <div class="col-lg-3">
             <p>Зв’яжіться з нами: +380-88-675-89-12</p>
         </div>
         <div class="col-lg-12 text-center">
-            <p>© 2026 LibraVerse. Всі права захищені.</p>
+            <p>© 2026 BookLand. Kasianenko A.V. Всі права захищені.</p>
         </div>
     </footer>
+
 </body>
 </html>
 <?php 
