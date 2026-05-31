@@ -1,29 +1,24 @@
-$(document).ready(function() {
-    $('#booksStatistics').click(function(e) {
-        e.preventDefault();
-        loadSnippet('../snippets/books_statistics.php');
-    });
+$(document).ready(function () {
 
-    $('#customersStatistics').click(function(e) {
-        e.preventDefault();
-        loadSnippet('../snippets/customers_statistics.php');
-    });
-
-    $('#librariansStatistics').click(function(e) {
-        e.preventDefault();
-        loadSnippet('../snippets/librarians_statistics.php');
-    });
-
-    function loadSnippet(url) {
-        $.ajax({
-            url: url,
-            type: 'GET',
-            success: function(data) {
-                $('#libraryStatistics').html(data);
-            },
-            error: function(xhr, status, error) {
-                console.error('Error loading snippet:', error);
-            }
-        });
+    function loadStatistics(file) {
+        $("#libraryStatistics").load(file);
     }
+
+    loadStatistics("../snippets/books_statistics.php");
+
+    $("#booksStatistics").on("click", function (e) {
+        e.preventDefault();
+        loadStatistics("../snippets/books_statistics.php");
+    });
+
+    $("#customersStatistics").on("click", function (e) {
+        e.preventDefault();
+        loadStatistics("../snippets/customers_statistics.php");
+    });
+
+    $("#employeesStatistics").on("click", function (e) {
+        e.preventDefault();
+        loadStatistics("../snippets/employee_statistics.php");
+    });
+
 });

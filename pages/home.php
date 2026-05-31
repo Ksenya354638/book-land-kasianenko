@@ -22,31 +22,6 @@ if (isset($_GET['logOut'])) {
     session_destroy(); 
     header("Location: ../index.php");
 }
-$(document).ready(function () {
-
-    function loadStatistics(file) {
-        $("#libraryStatistics").load(file);
-    }
-
-    // За замовчуванням
-    loadStatistics("../snippets/books_statistics.php");
-
-    $("#booksStatistics").click(function (e) {
-        e.preventDefault();
-        loadStatistics("../snippets/books_statistics.php");
-    });
-
-    $("#customersStatistics").click(function (e) {
-        e.preventDefault();
-        loadStatistics("../snippets/customers_statistics.php");
-    });
-
-    $("#employeesStatistics").click(function (e) {
-        e.preventDefault();
-        loadStatistics("../snippets/employee_statistics.php");
-    });
-
-});
 
 if (isset($_SESSION['EmployeeID'])) {
 ?>
