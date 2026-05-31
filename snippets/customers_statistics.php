@@ -1,6 +1,6 @@
 <?php
 $host = getenv('DB_HOST');
-$port = getenv('DB_PORT');
+$port = getenv('DB_PORT') ?: 11878;
 $dbname = getenv('DB_NAME');
 $user = getenv('DB_USER');
 $pass = getenv('DB_PASSWORD');
@@ -16,9 +16,9 @@ try {
     $row1 = $conn->query("SELECT COUNT(*) AS CustomerNumber FROM customers")->fetch(PDO::FETCH_ASSOC);
 
     // 2. Кількість унікальних клієнтів-боржників
-    $row2 = $conn->query("SELECT COUNT(DISTINCT CustomerID) AS CustomerNumber 
-                          FROM booksprovision 
-                          WHERE ReturnDate IS NULL")->fetch(PDO::FETCH_ASSOC);
+    $row2 = $conn->query("
+    SELECT COUNT(DISTINCT CustomerID) AS CustomerNumber
+    FROM sales")->fetch(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
     echo "<div class='alert alert-danger'>Помилка завантаження статистики</div>";

@@ -5,7 +5,7 @@ $host = getenv('DB_HOST');
 $dbname = getenv('DB_NAME');
 $user = getenv('DB_USER');
 $pass = getenv('DB_PASSWORD');
-$port = getenv('DB_PORT') ?: '3306'; 
+$port = getenv('DB_PORT') ?: '3306';
 
 try {
     $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8";
@@ -17,38 +17,43 @@ try {
     die("Помилка підключення до бази даних.");
 }
 
-// Перевірка авторизації
-if(isset($_SESSION['EmployeeID'])) {
-    
-    // 1. Статистика
-    $stats = $conn->query("
-        SELECT
-            COUNT(*) AS total_sales,
-            SUM(Quantity) AS total_books
-            FROM sales
-    ")->fetch(PDO::FETCH_ASSOC);
-    $total_sales = $stats['total_sales'] ?? 0;
-    $total_books = $stats['total_books'] ?? 0;
-
-    $count_all = $stats['total_sales'] ?? 0;
-
-    // 2. Основний запит
-    $query = "SELECT s.SaleID, s.BookID, s.CustomerID, b.Title, a.Name AS aName, a.Surname AS aSurname,
-                    c.FirstName, c.ParentalName, c.Surname AS cSurname, c.PhoneNumber, s.SaleDate,
-                    s.Quantity
-                FROM sales s JOIN books b ON b.BookID = s.BookID JOIN authors a ON a.AuthorID = b.AuthorID
-                JOIN customers c ON c.CustomerID = s.CustomerID
-                ORDER BY s.SaleDate DESC";
-
+if (!isset($_SESSION['EmployeeID'])) {
+    header("Location: ../index.php");
+    exit;
 }
-    
-    $sales = $conn->query($query)->fetchAll(PDO::FETCH_ASSOC);
 
-    if (isset($_GET['logOut'])){
-        session_destroy();
-        header("Location: ../index.php");
-        exit;
-    }
+// 1. Статистика
+$stats = $conn->query("
+    SELECT
+        COUNT(*) AS total_sales,
+        SUM(Quantity) AS total_books
+    FROM sales
+")->fetch(PDO::FETCH_ASSOC);
+
+$total_sales = $stats['total_sales'] ?? 0;
+$total_books = $stats['total_books'] ?? 0;
+
+// 2. Основний запит
+$query = "
+SELECT s.SaleID, s.BookID, s.CustomerID,
+       b.Title,
+       a.Name AS aName, a.Surname AS aSurname,
+       c.FirstName, c.Surname AS cSurname,
+       s.SaleDate, s.Quantity
+FROM sales s
+JOIN books b ON b.BookID = s.BookID
+JOIN authors a ON a.AuthorID = b.AuthorID
+JOIN customers c ON c.CustomerID = s.CustomerID
+ORDER BY s.SaleDate DESC
+";
+
+$sales = $conn->query($query)->fetchAll(PDO::FETCH_ASSOC);
+
+if (isset($_GET['logOut'])) {
+    session_destroy();
+    header("Location: ../index.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="uk_UA">
