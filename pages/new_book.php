@@ -30,7 +30,7 @@ if(isset($_SESSION['EmployeeID'])) {
             }
         }
 
-        $query = $conn->prepare("INSERT INTO books (Title, AuthorID, Publisher, Year, Category, Price, `Condition`, Abstract, Status, BookCover) 
+        $query = $conn->prepare("INSERT INTO books (Title, AuthorID, Publisher, Year, Category, Price, Quantity, Abstract, Status, BookCover) 
                                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'в наявності', ?)");
         
         $params = [
@@ -40,7 +40,7 @@ if(isset($_SESSION['EmployeeID'])) {
             $_POST['year'],
             $_POST['category'],
             $_POST['price'],
-            $_POST['condition'],
+            $_POST['quantity'],
             $_POST['abstract'],
             $target_file
         ];
@@ -128,12 +128,8 @@ if(isset($_SESSION['EmployeeID'])) {
                     <label>Ціна</label>
                     <input type="number" name="price" class="form-input">
 
-                    <label>Стан</label>
-                    <select name="condition" class="form-input">
-                        <option value="нова">нова</option>
-                        <option value="незначно пошкоджена">незначно пошкоджена</option>
-                        <option value="значно пошкоджена">значно пошкоджена</option>
-                    </select>
+                    <label>Кількість</label>
+                    <input type="number" name="quantity" class="form-input">
 
                     <label>Анотація</label>
                     <textarea name="abstract" class="form-input" rows="4"></textarea>
