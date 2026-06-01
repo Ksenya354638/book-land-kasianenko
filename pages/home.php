@@ -58,7 +58,7 @@ if (isset($_SESSION['EmployeeID'])) {
                   <li><a href="./books_list.php">Книги</a></li>
                   <li><a href="./author_list.php">Автори</a></li> 
                   <li><a href="./employees_list.php">Працівники</a></li>
-                  <li><a href="./sales_list.php">Видача книг</a></li>
+                  <li><a href="./sales_list.php">Продаж книг</a></li>
                   <li><a href="?logOut=1" id="logOut">Вийти</a></li>
                 </ul>
             </div>
@@ -89,18 +89,14 @@ if (isset($_SESSION['EmployeeID'])) {
         <a href="#" id="booksStatistics" class="col-lg-4">
             Статистика за книгами
         </a>
-
         <a href="#" id="customersStatistics" class="col-lg-4">
             Статистика за клієнтами
         </a>
-
         <a href="#" id="employeesStatistics" class="col-lg-4">
             Статистика за працівниками
         </a>
     </div>
 
-    <div class="col-lg-12" id="libraryStatistics">
-    </div>
 </div>
     </div>
     <footer class="footer col-lg-12">

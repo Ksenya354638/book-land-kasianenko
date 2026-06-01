@@ -138,8 +138,7 @@ if(isset($_SESSION['EmployeeID'])){
 </html>
 <?php 
 } else { 
-    // Блок для неавторизованих користувачів
-    header("Location: ../index.php"); // Або туди, де у вас вхід
+    header("Location: ../index.php"); 
     exit;
 } 
 ?>

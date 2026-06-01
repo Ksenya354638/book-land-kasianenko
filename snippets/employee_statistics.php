@@ -12,11 +12,11 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ]);
 
-    // 1. Загальна кількість працівників
+
     $totalStmt = $conn->query("SELECT COUNT(*) AS total FROM employees");
     $totalEmployees = $totalStmt->fetch()['total'] ?? 0;
 
-    // 2. Кількість за посадами (одним запитом)
+
     $stmt = $conn->query("
         SELECT Position, COUNT(*) AS cnt
         FROM employees
@@ -28,7 +28,7 @@ try {
         $positions[$row['Position']] = $row['cnt'];
     }
 
-    // Безпечні значення (на випадок відсутності позицій)
+  
     $seller1 = $positions['продавець на повний робочий день'] ?? 0;
     $seller2   = $positions['продавець на неповний робочий день'] ?? 0;
 

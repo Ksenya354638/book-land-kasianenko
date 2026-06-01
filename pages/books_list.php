@@ -101,7 +101,7 @@ if (isset($_POST['sell'])) {
     // Логаут
     if (isset($_GET['logOut'])) {
         session_destroy();
-        header("Location: ../index.php");
+        header(" : ../index.php");
         exit;
     }
 ?>
@@ -134,7 +134,7 @@ if (isset($_POST['sell'])) {
                   <li><a href="./books_list.php">Книги</a></li>
                   <li><a href="./author_list.php">Автори</a></li> 
                   <li><a href="./employees_list.php">Працівники</a></li>
-                  <li><a href="./sales_list.php">Видача книг</a></li>
+                  <li><a href="./sales_list.php">Продаж книг</a></li>
                   <li><a href="?logOut=1" id="logOut">Вийти</a></li>
                 </ul>
             </div>
@@ -240,7 +240,6 @@ if (isset($_POST['sell'])) {
 </html>
 <?php 
 } else { 
-    // Блок для неавторизованих користувачів
 ?>
 <!DOCTYPE html>
 <html lang="uk_UA">

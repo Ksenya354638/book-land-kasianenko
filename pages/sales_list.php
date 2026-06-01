@@ -84,7 +84,7 @@ if (isset($_GET['logOut'])) {
                   <li><a href="./books_list.php">Книги</a></li>
                   <li><a href="./author_list.php">Автори</a></li> 
                   <li><a href="./employees_list.php">Працівники</a></li>
-                  <li><a href="./sales_list.php">Видача книг</a></li>
+                  <li><a href="./sales_list.php">Продаж книг</a></li>
                   <li><a href="?logOut=1" id="logOut">Вийти</a></li>
                 </ul>
             </div>

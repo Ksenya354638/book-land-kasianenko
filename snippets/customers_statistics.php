@@ -12,10 +12,8 @@ try {
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
 
-    // 1. Загальна кількість клієнтів
     $row1 = $conn->query("SELECT COUNT(*) AS CustomerNumber FROM customers")->fetch(PDO::FETCH_ASSOC);
 
-    // 2. Кількість унікальних клієнтів-боржників
     $row2 = $conn->query("
     SELECT COUNT(DISTINCT CustomerID) AS CustomerNumber
     FROM sales")->fetch(PDO::FETCH_ASSOC);
